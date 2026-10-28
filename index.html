@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="vi" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DailyFlow - Quản Lý Lịch Trình & Nhắc Việc Thông Minh</title>
+  <meta name="description" content="Ứng dụng quản lý lịch trình hàng ngày khoa học, phân loại công việc quan trọng, nhắc nhở thông minh theo thời gian thực.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Header Bar -->
+  <header class="app-header">
+    <div class="header-inner">
+      <div class="brand">
+        <div class="brand-logo">
+          <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 16 14"></polyline>
+          </svg>
+        </div>
+        <div class="brand-info">
+          <h1>DailyFlow<span>.pro</span></h1>
+          <p id="greetingText">Chào bạn! Hãy khởi đầu ngày mới hiệu quả</p>
+        </div>
+      </div>
+
+      <!-- Realtime Live Clock -->
+      <div class="header-clock" id="liveClockCard">
+        <div class="clock-time" id="clockTime">12:00:00</div>
+        <div class="clock-date" id="clockDate">Thứ Tư, 28/10/2026</div>
+      </div>
+
+      <!-- Header Actions -->
+      <div class="header-actions">
+        <!-- Notification Permission Status Button -->
+        <button class="action-btn" id="btnToggleNotify" title="Cài đặt thông báo trình duyệt">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+          </svg>
+          <span class="btn-text" id="notifyStatusText">Bật Thông Báo</span>
+          <span class="status-dot" id="notifyStatusDot"></span>
+        </button>
+
+        <!-- Sound Alert Toggle Button -->
+        <button class="action-btn" id="btnToggleSound" title="Bật/Tắt chuông âm thanh nhắc việc">
+          <svg id="soundIconOn" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+          </svg>
+          <svg id="soundIconOff" class="hidden" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <line x1="23" y1="9" x2="17" y2="15"></line>
+            <line x1="17" y1="9" x2="23" y2="15"></line>
+          </svg>
+          <span class="btn-text" id="soundStatusText">Chuông: Bật</span>
+        </button>
+
+        <!-- Theme Toggle -->
+        <button class="icon-btn" id="btnThemeToggle" title="Chuyển chế độ Sáng / Tối" aria-label="Toggle Theme">
+          <svg id="themeIconDark" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+          <svg id="themeIconLight" class="hidden" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+        </button>
+
+        <!-- Quick Settings & Sample Data -->
+        <button class="icon-btn" id="btnOpenSettings" title="Cài đặt & Dữ liệu mẫu" aria-label="Settings">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          </svg>
+        </button>
+
+        <!-- Add Task Primary Button -->
+        <button class="btn-primary" id="btnAddTaskModal">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+          <span>Thêm Việc Mới</span>
+          <kbd class="btn-kbd">N</kbd>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main App Shell -->
+  <main class="app-main">
+    <div class="main-container">
+
+      <!-- Today's Hero / Progress Dashboard -->
+      <section class="dashboard-hero">
+        <div class="hero-content">
+          <div class="hero-status">
+            <div class="status-badge" id="heroStatusBadge">
+              <span class="pulsing-dot"></span>
+              <span id="heroCurrentTaskLabel">Đang quét lịch trình...</span>
+            </div>
+            <h2 class="hero-title" id="heroTitle">Tiến độ công việc hôm nay</h2>
+            <p class="hero-subtitle" id="heroSubtitle">Giữ vững nhịp điệu và ưu tiên những việc quan trọng nhất!</p>
+          </div>
+
+          <!-- Circular / Linear Progress Bar Combo -->
+          <div class="hero-progress-box">
+            <div class="progress-details">
+              <div class="progress-percent" id="heroProgressPercent">0%</div>
+              <div class="progress-text">Hoàn thành (<span id="heroCompletedCount">0</span>/<span id="heroTotalCount">0</span>)</div>
+            </div>
+            <div class="progress-bar-track">
+              <div class="progress-bar-fill" id="heroProgressBar" style="width: 0%;"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4 Key Metrics Cards -->
+        <div class="metric-grid">
+          <!-- Total Tasks -->
+          <div class="metric-card">
+            <div class="metric-icon total">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+            </div>
+            <div class="metric-body">
+              <span class="metric-label">Tổng việc trong ngày</span>
+              <div class="metric-val" id="statTotal">0</div>
+            </div>
+          </div>
+
+          <!-- Urgent & Important Tasks -->
+          <div class="metric-card urgent-highlight" id="cardUrgentStat">
+            <div class="metric-icon urgent">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+            </div>
+            <div class="metric-body">
+              <span class="metric-label">Rất quan trọng</span>
+              <div class="metric-val" id="statUrgent">0</div>
+            </div>
+            <span class="urgent-tag" id="statUrgentPendingTag">0 cần làm</span>
+          </div>
+
+          <!-- Important Tasks -->
+          <div class="metric-card">
+            <div class="metric-icon important">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+            </div>
+            <div class="metric-body">
+              <span class="metric-label">Quan trọng</span>
+              <div class="metric-val" id="statImportant">0</div>
+            </div>
+          </div>
+
+          <!-- Completed Tasks -->
+          <div class="metric-card">
+            <div class="metric-icon completed">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+            </div>
+            <div class="metric-body">
+              <span class="metric-label">Đã hoàn tất</span>
+              <div class="metric-val" id="statCompleted">0</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Control Bar: Date Selector + View Switcher + Priority Filter -->
+      <section class="control-panel">
+        <div class="date-selector">
+          <button class="date-btn" id="btnPrevDay" title="Ngày hôm trước">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
+          </button>
+          <button class="date-chip active" id="btnDateToday">Hôm nay</button>
+          <button class="date-chip" id="btnDateTomorrow">Ngày mai</button>
+          <div class="date-input-wrapper">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+            <input type="date" id="selectedDateInput" aria-label="Chọn ngày">
+          </div>
+          <button class="date-btn" id="btnNextDay" title="Ngày kế tiếp">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+          </button>
+        </div>
+
+        <!-- View Switcher Tabs -->
+        <div class="view-switch-tabs">
+          <button class="view-tab active" data-view="timeline" id="tabViewTimeline">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 15 15"></polyline></svg>
+            <span>Dòng Thời Gian</span>
+          </button>
+          <button class="view-tab" data-view="list" id="tabViewList">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+            <span>Danh Sách Thẻ</span>
+          </button>
+          <button class="view-tab" data-view="matrix" id="tabViewMatrix">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+            <span>Ma Trận Ưu Tiên</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- Filter & Search Toolbar -->
+      <section class="toolbar">
+        <div class="filter-pills" id="filterPillsContainer">
+          <button class="filter-pill active" data-filter="all">Tất cả <span class="pill-count" id="countAll">0</span></button>
+          <button class="filter-pill filter-urgent" data-filter="p1">
+            <span class="dot dot-urgent"></span> Rất quan trọng <span class="pill-count" id="countP1">0</span>
+          </button>
+          <button class="filter-pill filter-important" data-filter="p2">
+            <span class="dot dot-important"></span> Quan trọng <span class="pill-count" id="countP2">0</span>
+          </button>
+          <button class="filter-pill filter-normal" data-filter="p3">
+            <span class="dot dot-normal"></span> Bình thường <span class="pill-count" id="countP3">0</span>
+          </button>
+          <button class="filter-pill filter-low" data-filter="p4">
+            <span class="dot dot-low"></span> Không quan trọng <span class="pill-count" id="countP4">0</span>
+          </button>
+          <button class="filter-pill filter-pending" data-filter="pending">Chưa xong</button>
+          <button class="filter-pill filter-done" data-filter="done">Đã xong</button>
+        </div>
+
+        <div class="search-box">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          <input type="text" id="searchInput" placeholder="Tìm kiếm công việc...">
+          <button class="clear-search-btn hidden" id="btnClearSearch">&times;</button>
+        </div>
+      </section>
+
+      <!-- Focus Alert Banner: Shows Next Imminent Task or Active Task -->
+      <section class="focus-banner" id="focusBanner" style="display: none;">
+        <div class="focus-left">
+          <div class="focus-pulse-icon">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+          </div>
+          <div class="focus-info">
+            <span class="focus-tag" id="focusBannerTag">ĐANG DIỄN RA</span>
+            <h4 class="focus-title" id="focusBannerTitle">Họp giao ban dự án cùng ban điều hành</h4>
+            <div class="focus-meta">
+              <span id="focusBannerTime">14:00 - 15:30</span>
+              <span class="focus-divider">•</span>
+              <span id="focusBannerPriority" class="badge-priority p1">Rất quan trọng</span>
+            </div>
+          </div>
+        </div>
+        <div class="focus-actions">
+          <button class="btn-sm btn-done-quick" id="btnFocusQuickDone">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            Xong việc này
+          </button>
+        </div>
+      </section>
+
+      <!-- VIEW 1: TIMELINE VIEW -->
+      <section class="view-container" id="timelineView">
+        <div class="timeline-wrapper">
+          <!-- Timeline Current Time Indicator -->
+          <div class="timeline-now-marker" id="timelineNowMarker">
+            <div class="now-pin"></div>
+            <div class="now-line"></div>
+            <div class="now-time-tag" id="nowTimeTag">15:15 Hiện tại</div>
+          </div>
+
+          <!-- Timeline Time Grid with Morning, Afternoon, Evening sections -->
+          <div class="timeline-sections" id="timelineSectionsContainer">
+            <!-- Dynamically populated via JS -->
+          </div>
+        </div>
+      </section>
+
+      <!-- VIEW 2: SMART LIST VIEW -->
+      <section class="view-container hidden" id="listView">
+        <div class="list-groups-wrapper" id="listGroupsContainer">
+          <!-- Dynamically populated via JS -->
+        </div>
+      </section>
+
+      <!-- VIEW 3: EISENHOWER MATRIX VIEW -->
+      <section class="view-container hidden" id="matrixView">
+        <div class="matrix-header-info">
+          <p class="matrix-description">
+            <strong>Ma trận Eisenhower:</strong> Bí quyết tối ưu hóa thời gian của các nhà lãnh đạo hàng đầu. 
+            Tập trung trước hết vào <em>Khẩn cấp & Quan trọng</em>, dành thời gian chủ động cho <em>Quan trọng nhưng không khẩn cấp</em>.
+          </p>
+        </div>
+
+        <div class="matrix-grid">
+          <!-- Quadrant 1: Urgent & Important -->
+          <div class="matrix-quadrant quad-1">
+            <div class="quad-header">
+              <div class="quad-title-wrap">
+                <span class="quad-badge badge-p1">ƯU TIÊN SỐ 1</span>
+                <h3>Khẩn Cấp & Quan Trọng</h3>
+              </div>
+              <span class="quad-action-hint">Làm ngay lập tức 🔥</span>
+            </div>
+            <div class="quad-tasks-list" id="quadTasks1">
+              <!-- Populated via JS -->
+            </div>
+          </div>
+
+          <!-- Quadrant 2: Important, Not Urgent -->
+          <div class="matrix-quadrant quad-2">
+            <div class="quad-header">
+              <div class="quad-title-wrap">
+                <span class="quad-badge badge-p2">ƯU TIÊN SỐ 2</span>
+                <h3>Quan Trọng - Không Khẩn Cấp</h3>
+              </div>
+              <span class="quad-action-hint">Lên lịch & Tập trung ⭐</span>
+            </div>
+            <div class="quad-tasks-list" id="quadTasks2">
+              <!-- Populated via JS -->
+            </div>
+          </div>
+
+          <!-- Quadrant 3: Urgent, Not Important -->
+          <div class="matrix-quadrant quad-3">
+            <div class="quad-header">
+              <div class="quad-title-wrap">
+                <span class="quad-badge badge-p3">ƯU TIÊN SỐ 3</span>
+                <h3>Khẩn Cấp - Ít Quan Trọng</h3>
+              </div>
+              <span class="quad-action-hint">Giải quyết nhanh / Ủy quyền ⚡</span>
+            </div>
+            <div class="quad-tasks-list" id="quadTasks3">
+              <!-- Populated via JS -->
+            </div>
+          </div>
+
+          <!-- Quadrant 4: Not Urgent, Not Important -->
+          <div class="matrix-quadrant quad-4">
+            <div class="quad-header">
+              <div class="quad-title-wrap">
+                <span class="quad-badge badge-p4">ƯU TIÊN SỐ 4</span>
+                <h3>Không Khẩn Cấp - Không Quan Trọng</h3>
+              </div>
+              <span class="quad-action-hint">Làm khi rảnh / Hạn chế ☕</span>
+            </div>
+            <div class="quad-tasks-list" id="quadTasks4">
+              <!-- Populated via JS -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Empty State View (Shown when no tasks match filter) -->
+      <div class="empty-state hidden" id="emptyStateContainer">
+        <div class="empty-icon">
+          <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="10"></circle><path d="M8 12h8"></path><path d="M12 8v8"></path></svg>
+        </div>
+        <h3 id="emptyTitle">Không có công việc nào</h3>
+        <p id="emptyDesc">Chưa có lịch trình cho mục này. Nhấn nút bên dưới để thêm công việc mới!</p>
+        <button class="btn-primary" id="btnEmptyAdd">Thêm Công Việc Mới</button>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- MODAL: ADD / EDIT TASK -->
+  <div class="modal-backdrop hidden" id="taskModalBackdrop">
+    <div class="modal-card" id="taskModal">
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <div class="modal-icon" id="modalIcon">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+          </div>
+          <h3 id="modalHeading">Thêm Lịch Trình Mới</h3>
+        </div>
+        <button class="modal-close-btn" id="btnCloseTaskModal" aria-label="Đóng">&times;</button>
+      </div>
+
+      <form id="taskForm" class="modal-form">
+        <input type="hidden" id="taskIdInput">
+
+        <!-- Task Title -->
+        <div class="form-group">
+          <label for="taskTitleInput" class="form-label">
+            Tên công việc <span class="required">*</span>
+          </label>
+          <input type="text" id="taskTitleInput" class="form-control form-control-lg" placeholder="Ví dụ: Họp báo cáo tiến độ tuần với khách hàng..." required autofocus>
+        </div>
+
+        <!-- Priority Selection (Core Feature: Quan trọng vs Không quan trọng) -->
+        <div class="form-group">
+          <label class="form-label">
+            Mức độ quan trọng & Ưu tiên <span class="required">*</span>
+          </label>
+          <div class="priority-selector">
+            <label class="priority-opt opt-p1">
+              <input type="radio" name="taskPriority" value="p1" required>
+              <div class="opt-card">
+                <span class="opt-icon">🔥</span>
+                <div class="opt-text">
+                  <strong>Rất quan trọng</strong>
+                  <small>Khẩn cấp, làm ngay</small>
+                </div>
+              </div>
+            </label>
+
+            <label class="priority-opt opt-p2">
+              <input type="radio" name="taskPriority" value="p2" checked>
+              <div class="opt-card">
+                <span class="opt-icon">⭐</span>
+                <div class="opt-text">
+                  <strong>Quan trọng</strong>
+                  <small>Cần ưu tiên làm</small>
+                </div>
+              </div>
+            </label>
+
+            <label class="priority-opt opt-p3">
+              <input type="radio" name="taskPriority" value="p3">
+              <div class="opt-card">
+                <span class="opt-icon">⚡</span>
+                <div class="opt-text">
+                  <strong>Bình thường</strong>
+                  <small>Công việc thường nhật</small>
+                </div>
+              </div>
+            </label>
+
+            <label class="priority-opt opt-p4">
+              <input type="radio" name="taskPriority" value="p4">
+              <div class="opt-card">
+                <span class="opt-icon">☕</span>
+                <div class="opt-text">
+                  <strong>Không quan trọng</strong>
+                  <small>Làm khi rảnh</small>
+                </div>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <!-- Date & Time Range -->
+        <div class="form-row">
+          <div class="form-group col-4">
+            <label for="taskDateInput" class="form-label">Ngày thực hiện <span class="required">*</span></label>
+            <input type="date" id="taskDateInput" class="form-control" required>
+          </div>
+          <div class="form-group col-4">
+            <label for="taskStartTimeInput" class="form-label">Giờ bắt đầu <span class="required">*</span></label>
+            <input type="time" id="taskStartTimeInput" class="form-control" required>
+          </div>
+          <div class="form-group col-4">
+            <label for="taskEndTimeInput" class="form-label">Giờ kết thúc <span class="required">*</span></label>
+            <input type="time" id="taskEndTimeInput" class="form-control" required>
+          </div>
+        </div>
+
+        <!-- Category & Notification Reminder -->
+        <div class="form-row">
+          <div class="form-group col-6">
+            <label for="taskCategorySelect" class="form-label">Danh mục / Lĩnh vực</label>
+            <select id="taskCategorySelect" class="form-control">
+              <option value="work">💼 Công việc / Dự án</option>
+              <option value="meeting">🤝 Cuộc họp / Gặp gỡ</option>
+              <option value="study">📚 Học tập / Nghiên cứu</option>
+              <option value="health">🏃‍♂️ Sức khỏe / Thể thao</option>
+              <option value="personal">👤 Đời sống cá nhân</option>
+              <option value="finance">💰 Tài chính / Mua sắm</option>
+              <option value="rest">☕ Nghỉ ngơi / Giải trí</option>
+            </select>
+          </div>
+
+          <div class="form-group col-6">
+            <label for="taskReminderSelect" class="form-label">
+              🔔 Thông báo nhắc nhở
+            </label>
+            <select id="taskReminderSelect" class="form-control">
+              <option value="on_time">Đúng giờ bắt đầu</option>
+              <option value="5_min_before">Trước 5 phút</option>
+              <option value="10_min_before">Trước 10 phút</option>
+              <option value="15_min_before">Trước 15 phút</option>
+              <option value="30_min_before">Trước 30 phút</option>
+              <option value="none">Không nhắc</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Notes / Checklist Description -->
+        <div class="form-group">
+          <label for="taskNotesInput" class="form-label">Chi tiết ghi chú / Checklist (tùy chọn)</label>
+          <textarea id="taskNotesInput" class="form-control" rows="3" placeholder="Nhập link tài liệu, nội dung cần chuẩn bị hoặc các bước thực hiện..."></textarea>
+        </div>
+
+        <!-- Modal Actions Footer -->
+        <div class="modal-footer">
+          <button type="button" class="btn-secondary" id="btnCancelTaskModal">Hủy bỏ</button>
+          <button type="submit" class="btn-primary" id="btnSaveTask">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            <span id="saveBtnText">Lưu Lịch Trình</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- POPUP ALARM / REMINDER MODAL (When task time arrives) -->
+  <div class="alarm-backdrop hidden" id="alarmModalBackdrop">
+    <div class="alarm-modal" id="alarmModal">
+      <div class="alarm-header-animation">
+        <div class="alarm-bell-ring">
+          <svg viewBox="0 0 24 24" width="38" height="38" fill="none" stroke="currentColor" stroke-width="2.2">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+          </svg>
+        </div>
+      </div>
+      <div class="alarm-content">
+        <span class="alarm-priority-tag" id="alarmPriorityTag">🔥 VIỆC RẤT QUAN TRỌNG</span>
+        <h2 class="alarm-title" id="alarmTaskTitle">Họp với đối tác quan trọng</h2>
+        <div class="alarm-meta">
+          <span class="alarm-time" id="alarmTaskTime">⏰ 15:30 - 16:30</span>
+          <span class="alarm-divider">•</span>
+          <span class="alarm-cat" id="alarmTaskCat">💼 Công việc</span>
+        </div>
+        <p class="alarm-note" id="alarmTaskNote">Đã đến thời gian thực hiện theo lịch trình đã lên. Hãy tập trung bắt đầu ngay!</p>
+      </div>
+      <div class="alarm-actions">
+        <button class="btn-alarm-snooze" id="btnAlarmSnooze">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 14 14"></polyline></svg>
+          Hoãn nhắc 5 phút
+        </button>
+        <button class="btn-alarm-complete" id="btnAlarmComplete">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          Hoàn thành luôn
+        </button>
+        <button class="btn-alarm-dismiss" id="btnAlarmDismiss">Đã rõ</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SETTINGS & DATA MODAL -->
+  <div class="modal-backdrop hidden" id="settingsModalBackdrop">
+    <div class="modal-card modal-sm" id="settingsModal">
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+          <h3>Cài Đặt & Dữ Liệu</h3>
+        </div>
+        <button class="modal-close-btn" id="btnCloseSettingsModal">&times;</button>
+      </div>
+
+      <div class="settings-body">
+        <div class="settings-item">
+          <div class="item-info">
+            <strong>Thử nghiệm âm thanh chuông báo</strong>
+            <small>Kiểm tra loa và chuông nhắc hẹn</small>
+          </div>
+          <button class="btn-sm btn-secondary" id="btnTestSound">Phát thử 🔔</button>
+        </div>
+
+        <div class="settings-item">
+          <div class="item-info">
+            <strong>Khôi phục dữ liệu mẫu</strong>
+            <small>Nạp lại 1 ngày làm việc chuẩn mẫu (có cả việc rất quan trọng và ít quan trọng)</small>
+          </div>
+          <button class="btn-sm btn-secondary" id="btnResetSample">Nạp Mẫu 🔄</button>
+        </div>
+
+        <div class="settings-item">
+          <div class="item-info">
+            <strong>Xuất dữ liệu lịch trình (Backup)</strong>
+            <small>Tải file JSON lưu giữ lịch trình</small>
+          </div>
+          <button class="btn-sm btn-secondary" id="btnExportData">Xuất JSON 📥</button>
+        </div>
+
+        <div class="settings-item">
+          <div class="item-info">
+            <strong>Nhập dữ liệu từ file</strong>
+            <small>Phục hồi lịch trình từ file JSON</small>
+          </div>
+          <label class="btn-sm btn-secondary" style="cursor: pointer;">
+            Nhập JSON 📤
+            <input type="file" id="fileImportInput" accept=".json" style="display: none;">
+          </label>
+        </div>
+
+        <div class="settings-item danger-item">
+          <div class="item-info">
+            <strong>Xóa toàn bộ lịch trình</strong>
+            <small>Xóa sạch mọi công việc trong bộ nhớ</small>
+          </div>
+          <button class="btn-sm btn-danger" id="btnClearAllData">Xóa sạch 🗑️</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST CONTAINER -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Application Script -->
+  <script src="app.js"></script>
+</body>
+</html>
